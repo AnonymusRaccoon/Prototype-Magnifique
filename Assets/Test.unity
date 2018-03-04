@@ -253,7 +253,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4061937932440146, guid: b21e2e91c2466fa4ba8c38be7831894c, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0.174
+      value: 0.176
       objectReference: {fileID: 0}
     - target: {fileID: 4061937932440146, guid: b21e2e91c2466fa4ba8c38be7831894c, type: 2}
       propertyPath: m_LocalRotation.x
@@ -275,6 +275,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 4061937932440146, guid: b21e2e91c2466fa4ba8c38be7831894c, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b21e2e91c2466fa4ba8c38be7831894c, type: 2}
   m_IsPrefabParent: 0
@@ -295,7 +299,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4928226377463138, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -0.266
+      value: -0.285
       objectReference: {fileID: 0}
     - target: {fileID: 4928226377463138, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
       propertyPath: m_LocalRotation.x
@@ -316,6 +320,18 @@ Prefab:
     - target: {fileID: 4928226377463138, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928226377463138, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928226377463138, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928226377463138, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
@@ -440,6 +456,9 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &1699708122
 GameObject:
   m_ObjectHideFlags: 0
