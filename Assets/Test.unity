@@ -231,7 +231,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4620220062861480, guid: 1e59ce4d0aab18f44a51b286de5259c4, type: 2}
       propertyPath: m_RootOrder
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1e59ce4d0aab18f44a51b286de5259c4, type: 2}
@@ -273,7 +273,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4061937932440146, guid: b21e2e91c2466fa4ba8c38be7831894c, type: 2}
       propertyPath: m_RootOrder
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b21e2e91c2466fa4ba8c38be7831894c, type: 2}
@@ -315,7 +315,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4928226377463138, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
       propertyPath: m_RootOrder
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bebad6dbaee6f9440afb6cfabba013d3, type: 2}
@@ -419,7 +419,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1180913642
 MonoBehaviour:
@@ -434,7 +434,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   airSpeed: 7
-  jumpForce: 400
+  jumpForce: 8
+  smallJump: 4
+  gravity: 8
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &1699708122
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,7 +516,7 @@ GameObject:
   - component: {fileID: 1936456414}
   - component: {fileID: 1936456413}
   - component: {fileID: 1936456412}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -582,5 +587,5 @@ Transform:
   m_LocalScale: {x: 30, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
