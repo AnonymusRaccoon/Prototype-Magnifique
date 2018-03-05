@@ -12,15 +12,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private int wallJumpPush = 250;
 
     [Space]
-    [SerializeField] private LayerMask groundMask;
     [SerializeField] private LayerMask wallMask;
 
-    private bool isGrounded = true;
-    private bool canCancel = false;
-    private bool canWallJump = false;
+    private bool groundedLastFrame = false;
     private int wallDirection;
     private float jumpDirection;
-    private bool airControl = false;
+    private MovingElement movingPlateform;
 
     private Rigidbody rb;
     
@@ -30,80 +27,142 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    private void FixedUpdate()
+    private bool IsGrounded()
     {
-        if (Physics.OverlapSphere(rb.position, 1.5f, groundMask).Length > 0)
+        if (Mathf.Abs(RelativeVelocity().y) < 0.1f)
         {
-            isGrounded = true;
-            canCancel = false;
+            if (groundedLastFrame)
+                return true;
+            else
+            {
+                groundedLastFrame = true;
+                return false;
+            }
         }
-        else
-            isGrounded = false;
+        groundedLastFrame = false;
+        return false;
+    }
 
+    private bool IsSliding()
+    {
         Collider[] walls = Physics.OverlapSphere(rb.position, 1, wallMask);
         if (walls.Length > 0)
         {
-            canWallJump = true;
-            if(walls[0].transform.position.x > rb.position.x)
-                wallDirection = -1;
-            else
+            if (walls[0].transform.position.x > rb.position.x && Input.GetAxis("Horizontal") > 0)
+            {
                 wallDirection = 1;
+                return true;
+            }
+            else if(walls[0].transform.position.x < rb.position.x && Input.GetAxis("Horizontal") < 0)
+            {
+                wallDirection = -1;
+                return true;
+            }
         }
-        else
-        {
-            canWallJump = false;
-        }
+        return false;
+    }
 
-
+    private bool AirControl(bool isGrounded)
+    {
         if (!isGrounded)
         {
             if (jumpDirection > 0)
             {
                 if (Input.GetAxis("Horizontal") > 0)
-                    airControl = false;
+                    return false;
                 else
-                    airControl = true;
+                    return true;
             }
             else
             {
                 if (Input.GetAxis("Horizontal") > 0)
-                    airControl = true;
+                    return true;
                 else
-                    airControl = false;
+                    return false;
             }
         }
+        return false;
+    }
 
-        rb.MovePosition(rb.position + new Vector3(Input.GetAxis("Horizontal") * (airControl ? airSpeed : speed) * Time.fixedDeltaTime - rb.velocity.x, 0, 0));
-        airControl = false;
+    public void OnCollisionEnter(Collision collision)
+    {
+        MovingElement movingElement = collision.gameObject.GetComponent<MovingElement>();
+        if(movingElement != null)
+        {
+            movingPlateform = movingElement;
+        }
+    }
 
+    private Vector3 RelativeVelocity()
+    {
+        return rb.velocity - PlateformVelocity();
+    }
 
+    private Vector3 PlateformVelocity()
+    {
+        if (movingPlateform != null)
+            return movingPlateform.rb.velocity;
+        else
+            return Vector3.zero;
+    }
+
+    private void FixedUpdate()
+    {
+        bool isGrounded = IsGrounded();
+        bool isSliding = IsSliding();
+        bool airControl = AirControl(isGrounded);
+
+        //Check if we have left the plateform
+        if (movingPlateform != null && !isGrounded && !groundedLastFrame && !isSliding)
+            movingPlateform = null;
+
+        //Move user with horizontal axis input
+        rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * (airControl ? airSpeed : speed) - rb.velocity.x, 0, 0), ForceMode.Impulse);
+
+        //Make user jump
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             jumpDirection = Input.GetAxis("Horizontal");
-            isGrounded = false;
-            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
-            canCancel = true;
+            rb.velocity = new Vector3(rb.velocity.x, jumpForce + (movingPlateform != null ? movingPlateform.rb.velocity.y : 0) , rb.velocity.z);
         }
-        if (Input.GetButtonUp("Jump") && !isGrounded && rb.velocity.y > smallJump && canCancel)
+        //Make a small jump if user drop the button
+        if (Input.GetButtonUp("Jump") && !isGrounded && rb.velocity.y > smallJump)
         {
-            canCancel = false;
             rb.velocity = new Vector3(rb.velocity.x, smallJump, rb.velocity.z);
         }
 
+        //Move with the plateform
+        if (movingPlateform != null)
+            rb.AddForce(new Vector3(movingPlateform.rb.velocity.x, 0, 0), ForceMode.Impulse);
 
-        if (rb.velocity.y < 1)
+        //Apply more gravity
+        if (rb.velocity.y < 1 && !isSliding)
         {
-            rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y - gravity * Time.fixedDeltaTime, rb.velocity.z);
+            rb.AddForce(new Vector3(0, gravity, 0), ForceMode.Acceleration);
         }
 
-
-        if (canWallJump && !isGrounded && Input.GetButtonDown("Jump"))
+        //WallSlide
+        if (isSliding)
         {
-            print("Wall Jumping");
-            canCancel = false;
-            jumpDirection = wallDirection;
-            rb.velocity = new Vector3(wallJumpPush * -wallDirection, wallJump, rb.velocity.z);
-            //rb.AddForce(new Vector3(wallJumpPush * -wallDirection, wallJump, 0), ForceMode.Acceleration);
+            rb.AddForce(new Vector3(0, Mathf.Abs(rb.velocity.y) + gravity / 3, 0), ForceMode.Acceleration);
+
+            //Wall Jump
+            if (Input.GetButtonDown("Jump"))
+            {
+                print("Wall jump");
+                jumpDirection = -wallDirection;
+                rb.AddForce(new Vector3(wallJumpPush * jumpDirection, wallJump, 0), ForceMode.Impulse);
+            }
         }
+
+        //////Wall jump
+        //if (canWallJump && !isGrounded && Input.GetButtonDown("Jump"))
+        //{
+        //    print("Wall Jumping");
+        //    //canCancel = false;
+        //    jumpDirection = wallDirection;
+        //    //rb.velocity = new Vector3(wallJumpPush * -wallDirection, wallJump, rb.velocity.z);
+        //    rb.AddForce(new Vector3(wallJumpPush * -wallDirection, wallJump, 0), ForceMode.Acceleration);
+        //}
     }
 }
