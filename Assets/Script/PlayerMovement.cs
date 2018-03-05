@@ -10,12 +10,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gravity = 8.5f;
     [SerializeField] private int wallJump = 200;
     [SerializeField] private int wallJumpPush = 250;
+    [SerializeField] private float wallJumpSpeed;
 
     [Space]
     [SerializeField] private LayerMask wallMask;
 
     private bool groundedLastFrame = false;
     private int wallDirection;
+    private int wallJumpTimer = 0;
+    private bool wallJumped;
     private float jumpDirection;
     private MovingElement movingPlateform;
 
@@ -32,7 +35,10 @@ public class PlayerMovement : MonoBehaviour
         if (Mathf.Abs(RelativeVelocity().y) < 0.1f)
         {
             if (groundedLastFrame)
+            {
+                wallJumped = false;
                 return true;
+            }
             else
             {
                 groundedLastFrame = true;
@@ -48,6 +54,8 @@ public class PlayerMovement : MonoBehaviour
         Collider[] walls = Physics.OverlapSphere(rb.position, 1, wallMask);
         if (walls.Length > 0)
         {
+            wallJumpTimer = 10;
+
             if (walls[0].transform.position.x > rb.position.x && Input.GetAxis("Horizontal") > 0)
             {
                 wallDirection = 1;
@@ -59,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
                 return true;
             }
         }
+        wallJumpTimer--;
         return false;
     }
 
@@ -117,7 +126,34 @@ public class PlayerMovement : MonoBehaviour
             movingPlateform = null;
 
         //Move user with horizontal axis input
-        rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * (airControl ? airSpeed : speed) - rb.velocity.x, 0, 0), ForceMode.Impulse);
+        if (!isSliding)
+        {
+            if(!wallJumped)
+                rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * (airControl ? airSpeed : speed) - rb.velocity.x, 0, 0), ForceMode.Impulse);
+            else
+            {
+                if(jumpDirection > 0 && Input.GetAxis("Horizontal") > 0)
+                {
+                    //good direction
+                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed / 2 - rb.velocity.x, 0, 0), ForceMode.Impulse);
+                }
+                else if(jumpDirection > 0 && Input.GetAxis("Horizontal") < 0)
+                {
+                    //reverse direction
+                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed - rb.velocity.x, 0, 0), ForceMode.Acceleration);
+                }
+                else if(jumpDirection < 0 && Input.GetAxis("Horizontal") > 0)
+                {
+                    //reverse direction
+                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed - rb.velocity.x, 0, 0), ForceMode.Acceleration);
+                }
+                else if(jumpDirection < 0 && Input.GetAxis("Horizontal") < 0)
+                {
+                    //good direction
+                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed / 2 - rb.velocity.x, 0, 0), ForceMode.Impulse);
+                }
+            }
+        }
 
         //Make user jump
         if (Input.GetButtonDown("Jump") && isGrounded)
@@ -126,10 +162,8 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector3(rb.velocity.x, jumpForce + (movingPlateform != null ? movingPlateform.rb.velocity.y : 0) , rb.velocity.z);
         }
         //Make a small jump if user drop the button
-        if (Input.GetButtonUp("Jump") && !isGrounded && rb.velocity.y > smallJump)
-        {
+        if (Input.GetButtonUp("Jump") && !isGrounded && rb.velocity.y > smallJump && !wallJumped)
             rb.velocity = new Vector3(rb.velocity.x, smallJump, rb.velocity.z);
-        }
 
         //Move with the plateform
         if (movingPlateform != null)
@@ -137,32 +171,20 @@ public class PlayerMovement : MonoBehaviour
 
         //Apply more gravity
         if (rb.velocity.y < 1 && !isSliding)
-        {
             rb.AddForce(new Vector3(0, gravity, 0), ForceMode.Acceleration);
-        }
 
         //WallSlide
-        if (isSliding)
+        if (wallJumpTimer > 0)
         {
-            rb.AddForce(new Vector3(0, Mathf.Abs(rb.velocity.y) + gravity / 3, 0), ForceMode.Acceleration);
-
             //Wall Jump
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump") && !isGrounded)
             {
-                print("Wall jump");
+                wallJumped = true;
                 jumpDirection = -wallDirection;
                 rb.AddForce(new Vector3(wallJumpPush * jumpDirection, wallJump, 0), ForceMode.Impulse);
             }
+            else if(isSliding)
+                rb.AddForce(new Vector3(0, Mathf.Abs(rb.velocity.y) + gravity / 3, 0), ForceMode.Acceleration);
         }
-
-        //////Wall jump
-        //if (canWallJump && !isGrounded && Input.GetButtonDown("Jump"))
-        //{
-        //    print("Wall Jumping");
-        //    //canCancel = false;
-        //    jumpDirection = wallDirection;
-        //    //rb.velocity = new Vector3(wallJumpPush * -wallDirection, wallJump, rb.velocity.z);
-        //    rb.AddForce(new Vector3(wallJumpPush * -wallDirection, wallJump, 0), ForceMode.Acceleration);
-        //}
     }
 }
