@@ -1,0 +1,10 @@
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MainMenu : MonoBehaviour
+{
+    public void PlayClick()
+    {
+        SceneManager.LoadScene(1);
+    }
+}

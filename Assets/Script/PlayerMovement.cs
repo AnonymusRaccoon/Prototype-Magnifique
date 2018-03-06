@@ -3,6 +3,10 @@
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private const string Horizontal = "Horizontal";
+    [SerializeField] private const string Jump = "Jump";
+
+    [Space]
     [SerializeField] private int speed = 10;
     [SerializeField] private int airSpeed = 5;
     [SerializeField] private int jumpForce = 8;
@@ -56,12 +60,12 @@ public class PlayerMovement : MonoBehaviour
         {
             wallJumpTimer = 10;
 
-            if (walls[0].transform.position.x > rb.position.x && Input.GetAxis("Horizontal") > 0)
+            if (walls[0].transform.position.x > rb.position.x && Input.GetAxis(Horizontal) > 0)
             {
                 wallDirection = 1;
                 return true;
             }
-            else if(walls[0].transform.position.x < rb.position.x && Input.GetAxis("Horizontal") < 0)
+            else if(walls[0].transform.position.x < rb.position.x && Input.GetAxis(Horizontal) < 0)
             {
                 wallDirection = -1;
                 return true;
@@ -77,14 +81,14 @@ public class PlayerMovement : MonoBehaviour
         {
             if (jumpDirection > 0)
             {
-                if (Input.GetAxis("Horizontal") > 0)
+                if (Input.GetAxis(Horizontal) > 0)
                     return false;
                 else
                     return true;
             }
             else
             {
-                if (Input.GetAxis("Horizontal") > 0)
+                if (Input.GetAxis(Horizontal) > 0)
                     return true;
                 else
                     return false;
@@ -129,40 +133,40 @@ public class PlayerMovement : MonoBehaviour
         if (!isSliding)
         {
             if(!wallJumped)
-                rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * (airControl ? airSpeed : speed) - rb.velocity.x, 0, 0), ForceMode.Impulse);
+                rb.AddForce(new Vector3(Input.GetAxis(Horizontal) * (airControl ? airSpeed : speed) - rb.velocity.x, 0, 0), ForceMode.Impulse);
             else
             {
-                if(jumpDirection > 0 && Input.GetAxis("Horizontal") > 0)
+                if(jumpDirection > 0 && Input.GetAxis(Horizontal) > 0)
                 {
                     //good direction
-                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed / 2 - rb.velocity.x, 0, 0), ForceMode.Impulse);
+                    rb.AddForce(new Vector3(Input.GetAxis(Horizontal) * airSpeed / 2 - rb.velocity.x, 0, 0), ForceMode.Impulse);
                 }
-                else if(jumpDirection > 0 && Input.GetAxis("Horizontal") < 0)
+                else if(jumpDirection > 0 && Input.GetAxis(Horizontal) < 0)
                 {
                     //reverse direction
-                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed - rb.velocity.x, 0, 0), ForceMode.Acceleration);
+                    rb.AddForce(new Vector3(Input.GetAxis(Horizontal) * airSpeed - rb.velocity.x, 0, 0), ForceMode.Acceleration);
                 }
-                else if(jumpDirection < 0 && Input.GetAxis("Horizontal") > 0)
+                else if(jumpDirection < 0 && Input.GetAxis(Horizontal) > 0)
                 {
                     //reverse direction
-                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed - rb.velocity.x, 0, 0), ForceMode.Acceleration);
+                    rb.AddForce(new Vector3(Input.GetAxis(Horizontal) * airSpeed - rb.velocity.x, 0, 0), ForceMode.Acceleration);
                 }
-                else if(jumpDirection < 0 && Input.GetAxis("Horizontal") < 0)
+                else if(jumpDirection < 0 && Input.GetAxis(Horizontal) < 0)
                 {
                     //good direction
-                    rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * airSpeed / 2 - rb.velocity.x, 0, 0), ForceMode.Impulse);
+                    rb.AddForce(new Vector3(Input.GetAxis(Horizontal) * airSpeed / 2 - rb.velocity.x, 0, 0), ForceMode.Impulse);
                 }
             }
         }
 
         //Make user jump
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown(Jump) && isGrounded)
         {
-            jumpDirection = Input.GetAxis("Horizontal");
+            jumpDirection = Input.GetAxis(Horizontal);
             rb.velocity = new Vector3(rb.velocity.x, jumpForce + (movingPlateform != null ? movingPlateform.rb.velocity.y : 0) , rb.velocity.z);
         }
         //Make a small jump if user drop the button
-        if (Input.GetButtonUp("Jump") && !isGrounded && rb.velocity.y > smallJump && !wallJumped)
+        if (Input.GetButtonUp(Jump) && !isGrounded && rb.velocity.y > smallJump && !wallJumped)
             rb.velocity = new Vector3(rb.velocity.x, smallJump, rb.velocity.z);
 
         //Move with the plateform
@@ -177,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
         if (wallJumpTimer > 0)
         {
             //Wall Jump
-            if (Input.GetButtonDown("Jump") && !isGrounded)
+            if (Input.GetButtonDown(Jump) && !isGrounded)
             {
                 wallJumped = true;
                 jumpDirection = -wallDirection;
