@@ -54,31 +54,33 @@ public class NetworkManager : NetworkLobbyManager
             CheckControllerToAdd(Controller);
         }
         //Check if user want to remove his player
-        if ((Input.GetKeyDown(KeyCode.JoystickButton1) && Input.GetKeyDown(KeyCode.JoystickButton4) && Input.GetKeyDown(KeyCode.JoystickButton5)) || Input.GetKeyDown(KeyCode.Escape))
+        if ((Input.GetKey(KeyCode.JoystickButton1) && Input.GetKey(KeyCode.JoystickButton4) && Input.GetKey(KeyCode.JoystickButton5)) || Input.GetKey(KeyCode.Escape))
         {
             int Controller = 0;
 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button1) && Input.GetKeyDown(KeyCode.Joystick1Button4) && Input.GetKeyDown(KeyCode.Joystick1Button5))
+            if (Input.GetKey(KeyCode.Joystick1Button1) && Input.GetKey(KeyCode.Joystick1Button4) && Input.GetKey(KeyCode.Joystick1Button5))
                 Controller = 1;
-            if (Input.GetKeyDown(KeyCode.Joystick2Button1) && Input.GetKeyDown(KeyCode.Joystick2Button4) && Input.GetKeyDown(KeyCode.Joystick2Button5))
+            if (Input.GetKey(KeyCode.Joystick2Button1) && Input.GetKey(KeyCode.Joystick2Button4) && Input.GetKey(KeyCode.Joystick2Button5))
                 Controller = 2;
-            if (Input.GetKeyDown(KeyCode.Joystick3Button1) && Input.GetKeyDown(KeyCode.Joystick3Button4) && Input.GetKeyDown(KeyCode.Joystick3Button5))
+            if (Input.GetKey(KeyCode.Joystick3Button1) && Input.GetKey(KeyCode.Joystick3Button4) && Input.GetKey(KeyCode.Joystick3Button5))
                 Controller = 3;
-            if (Input.GetKeyDown(KeyCode.Joystick4Button1) && Input.GetKeyDown(KeyCode.Joystick4Button4) && Input.GetKeyDown(KeyCode.Joystick4Button5))
+            if (Input.GetKey(KeyCode.Joystick4Button1) && Input.GetKey(KeyCode.Joystick4Button4) && Input.GetKey(KeyCode.Joystick4Button5))
                 Controller = 4;
-            if (Input.GetKeyDown(KeyCode.Joystick5Button1) && Input.GetKeyDown(KeyCode.Joystick5Button4) && Input.GetKeyDown(KeyCode.Joystick5Button5))
+            if (Input.GetKey(KeyCode.Joystick5Button1) && Input.GetKey(KeyCode.Joystick5Button4) && Input.GetKey(KeyCode.Joystick5Button5))
                 Controller = 5;
-            if (Input.GetKeyDown(KeyCode.Joystick6Button1) && Input.GetKeyDown(KeyCode.Joystick6Button4) && Input.GetKeyDown(KeyCode.Joystick6Button5))
+            if (Input.GetKey(KeyCode.Joystick6Button1) && Input.GetKey(KeyCode.Joystick6Button4) && Input.GetKey(KeyCode.Joystick6Button5))
                 Controller = 6;
-            if (Input.GetKeyDown(KeyCode.Joystick7Button1) && Input.GetKeyDown(KeyCode.Joystick7Button4) && Input.GetKeyDown(KeyCode.Joystick7Button5))
+            if (Input.GetKey(KeyCode.Joystick7Button1) && Input.GetKey(KeyCode.Joystick7Button4) && Input.GetKey(KeyCode.Joystick7Button5))
                 Controller = 7;
-            if (Input.GetKeyDown(KeyCode.Joystick8Button1) && Input.GetKeyDown(KeyCode.Joystick8Button4) && Input.GetKeyDown(KeyCode.Joystick8Button5))
+            if (Input.GetKey(KeyCode.Joystick8Button1) && Input.GetKey(KeyCode.Joystick8Button4) && Input.GetKey(KeyCode.Joystick8Button5))
                 Controller = 8;
             if (Input.GetKeyDown(KeyCode.Escape))
                 Controller = 9;
 
             CheckControllerToRemove(Controller);
         }
+        //Check for ready calls
+
     }
 
     private void CheckControllerToAdd(int Controller)
@@ -116,13 +118,19 @@ public class NetworkManager : NetworkLobbyManager
     private void AddLocalPlayer(int player)
     {
         if (player == 1 && GameObject.Find("LobbyPlayer (1)") != null)
+        {
+            SetupPlayerController(GameObject.Find("LobbyPlayer (1)").GetComponent<PlayerMovement>(), 1);
             return;
+        }
 
         TryToAddPlayer();
     }
 
     private void CheckControllerToRemove(int Controller)
     {
+        if (Controller == 0)
+            return;
+
         if(Controller == ControllerP1)
         {
             ControllerP1 = 0;
@@ -151,6 +159,78 @@ public class NetworkManager : NetworkLobbyManager
 
     private void RemoveLocalPlayer(int player)
     {
+        LobbyPlayer lobbyPlayer = GameObject.Find("LobbyPlayer (" + player + ")").GetComponent<LobbyPlayer>();
+        lobbyPlayer.RemovePlayer();
+    }
 
+    public void SetupPlayerController(PlayerMovement pMovement, int player)
+    {
+        if(player == 1)
+        {
+            if (ControllerP1 == 0)
+                return;
+
+            if(ControllerP1 == 9)
+            {
+                pMovement.Horizontal = "Horizontal_Keyboard";
+                pMovement.JumpKey = KeyCode.Space;
+            }
+            else
+            {
+                pMovement.Horizontal = "Horizontal_J" + ControllerP1;
+                pMovement.JumpKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP1 + "Button0");
+            }
+        }
+        else if (player == 2)
+        {
+            if (ControllerP2 == 0)
+                return;
+
+            if (ControllerP2 == 9)
+            {
+                pMovement.Horizontal = "Horizontal_Keyboard";
+                pMovement.JumpKey = KeyCode.Space;
+            }
+            else
+            {
+                pMovement.Horizontal = "Horizontal_J" + ControllerP2;
+                pMovement.JumpKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP2 + "Button0");
+            }
+        }
+        else if (player == 3)
+        {
+            if (ControllerP3 == 0)
+                return;
+
+            if (ControllerP3 == 9)
+            {
+                pMovement.Horizontal = "Horizontal_Keyboard";
+                pMovement.JumpKey = KeyCode.Space;
+            }
+            else
+            {
+                pMovement.Horizontal = "Horizontal_J" + ControllerP3;
+                pMovement.JumpKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP3 + "Button0");
+            }
+        }
+        else if (player == 4)
+        {
+            if (ControllerP4 == 0)
+                return; 
+
+            if (ControllerP4 == 9)
+            {
+                pMovement.Horizontal = "Horizontal_Keyboard";
+                pMovement.JumpKey = KeyCode.Space;
+            }
+            else
+            {
+                pMovement.Horizontal = "Horizontal_J" + ControllerP4;
+                pMovement.JumpKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP4 + "Button0");
+            }
+        }
+
+        pMovement.gameObject.transform.position = new Vector3(0, 2, 0);
+        pMovement.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0, 10, 0);
     }
 }

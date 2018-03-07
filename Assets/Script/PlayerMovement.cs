@@ -3,8 +3,8 @@
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private const string Horizontal = "Horizontal";
-    [SerializeField] private const string Jump = "Jump";
+    public string Horizontal;
+    public KeyCode JumpKey = KeyCode.None;
 
     [Space]
     [SerializeField] private int speed = 10;
@@ -121,6 +121,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (JumpKey == KeyCode.None || Horizontal == null)
+            return;
+
         bool isGrounded = IsGrounded();
         bool isSliding = IsSliding();
         bool airControl = AirControl(isGrounded);
@@ -160,13 +163,13 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Make user jump
-        if (Input.GetButtonDown(Jump) && isGrounded)
+        if (Input.GetKeyDown(JumpKey) && isGrounded)
         {
             jumpDirection = Input.GetAxis(Horizontal);
             rb.velocity = new Vector3(rb.velocity.x, jumpForce + (movingPlateform != null ? movingPlateform.rb.velocity.y : 0) , rb.velocity.z);
         }
         //Make a small jump if user drop the button
-        if (Input.GetButtonUp(Jump) && !isGrounded && rb.velocity.y > smallJump && !wallJumped)
+        if (Input.GetKeyUp(JumpKey) && !isGrounded && rb.velocity.y > smallJump && !wallJumped)
             rb.velocity = new Vector3(rb.velocity.x, smallJump, rb.velocity.z);
 
         //Move with the plateform
@@ -181,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
         if (wallJumpTimer > 0)
         {
             //Wall Jump
-            if (Input.GetButtonDown(Jump) && !isGrounded)
+            if (Input.GetKeyDown(JumpKey) && !isGrounded)
             {
                 wallJumped = true;
                 jumpDirection = -wallDirection;
