@@ -23,8 +23,8 @@ GameObject:
   - component: {fileID: 33948758755597288}
   - component: {fileID: 23819119452861082}
   - component: {fileID: 54758372379729046}
-  - component: {fileID: 65297197674145870}
   - component: {fileID: 114186454880906932}
+  - component: {fileID: 136866304799672338}
   m_Layer: 0
   m_Name: GamePlayer
   m_TagString: Player
@@ -99,20 +99,8 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 120
   m_CollisionDetection: 0
---- !u!65 &65297197674145870
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1312229280963800}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114031057434031142
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -134,9 +122,16 @@ MonoBehaviour:
   wallJump: 4
   wallJumpPush: 10
   wallJumpSpeed: 0
+  pushSpeed: 0.2
   wallMask:
     serializedVersion: 2
     m_Bits: 512
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  setuped: 0
+  misSliding: 0
+  wallDirection: 0
 --- !u!114 &114186454880906932
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -169,3 +164,16 @@ MonoBehaviour:
     i15: 200
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
+--- !u!136 &136866304799672338
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1312229280963800}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}

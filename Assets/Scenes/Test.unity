@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.43944067, g: 0.4877839, b: 0.5680216, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -394,48 +394,6 @@ MonoBehaviour:
   position2: {x: 1.17, y: 11.8, z: 0}
   speed: 1
   rb: {fileID: 0}
---- !u!1001 &1481613444
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -1.5799999
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 4.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265028090328394, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-      propertyPath: m_RootOrder
-      value: 6
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: bd4057d6cf22bd34b82c470a4b55ddc8, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &1699708122
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,7 +419,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 0.95493084, g: 0.97794116, b: 0.56087804, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -494,13 +452,54 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1699708122}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0.581598, y: -0, z: -0, w: 0.8134764}
+  m_LocalPosition: {x: -3.8, y: 6.71, z: -6.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 71.12601, y: 0, z: 0}
+--- !u!1 &1813748897
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1813748899}
+  - component: {fileID: 1813748898}
+  m_Layer: 0
+  m_Name: DeadZone
+  m_TagString: DeathZone
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1813748898
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1813748897}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 103.33339, y: 1, z: 1}
+  m_Center: {x: 0.56043434, y: 0, z: 0}
+--- !u!4 &1813748899
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1813748897}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.1232573, y: -19.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1936456411
 GameObject:
   m_ObjectHideFlags: 0
