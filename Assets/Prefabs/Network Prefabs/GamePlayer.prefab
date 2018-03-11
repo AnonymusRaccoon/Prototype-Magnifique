@@ -113,7 +113,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Horizontal: 
+  Vertical: 
   JumpKey: 0
+  HookKey: 0
+  DashKey: 0
+  UltKey: 0
   speed: 10
   airSpeed: 7
   jumpForce: 8
@@ -121,17 +125,16 @@ MonoBehaviour:
   gravity: -10
   wallJump: 4
   wallJumpPush: 10
-  wallJumpSpeed: 0
+  smallJumpPush: 5
   pushSpeed: 0.2
-  wallMask:
-    serializedVersion: 2
-    m_Bits: 512
+  dashSpeed: 15
+  smallProjectile: {fileID: 1556668439340832, guid: be1300b1777602f448d537a75a9093c3,
+    type: 2}
+  sProjSpeed: 2
   playerMask:
     serializedVersion: 2
     m_Bits: 1024
   setuped: 0
-  misSliding: 0
-  wallDirection: 0
 --- !u!114 &114186454880906932
 MonoBehaviour:
   m_ObjectHideFlags: 1

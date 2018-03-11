@@ -22,10 +22,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private int wallJumpPush = 10;
     [SerializeField] private int smallJumpPush = 5;
     [SerializeField] private float pushSpeed = 0.2f;
-    [SerializeField] private float dashSpeed = 15;
 
     [Space]
+    [SerializeField] private float dashSpeed = 15;
     [SerializeField] private GameObject smallProjectile;
+    [SerializeField] private float sProjSpeed = 2;
+    private bool canDash = true;
+    private float dashTime = 0;
+    private Vector3 dashVelocity;
 
 
     [Space]
@@ -35,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
     [Space]
     public bool setuped = false;
 
-    private float velocity = 0;
+    [HideInInspector] public float velocity = 0;
 
     private bool groundedLastFrame = false;
     private int wallDirection;
@@ -186,6 +190,9 @@ public class PlayerMovement : MonoBehaviour
         if (movingPlateform != null && !isGrounded && !groundedLastFrame && !isSliding)
             movingPlateform = null;
 
+        //Reload dash
+        if (isGrounded || isSliding || isPushing)
+            canDash = true;
 
         if (-1 < velocity && velocity < 1)
             velocity = 0;
@@ -205,8 +212,30 @@ public class PlayerMovement : MonoBehaviour
                 horizontalVel /= 2;
         }
 
+        if(dashTime > 0)
+        {
+            rb.velocity = dashVelocity;
+            //dashVelocity.x -= dashVelocity.x / 10;
+            dashVelocity.y -= dashVelocity.y / 10;
+            dashTime--;
+
+            if(dashTime == 0)
+            {
+                //Create projectile
+                GameObject proj = Instantiate(smallProjectile, rb.position + new Vector3(rb.velocity.x / 10, rb.velocity.y / 5, 0), Quaternion.identity);
+                proj.name = "SmallProjectile";
+                proj.GetComponent<Rigidbody>().velocity = new Vector3(dashVelocity.x * sProjSpeed, dashVelocity.y * sProjSpeed, 0);
+                proj.GetComponent<SmallProjectile>().sender = this;
+
+                dashVelocity = Vector3.zero;
+            }
+        }
+
         if(!isSliding || (isSliding && Mathf.Sign(wallDirection) != Mathf.Sign(Input.GetAxis(Horizontal))))
-            rb.AddForce(new Vector3(horizontalVel * (isPushing ? pushSpeed : 1) * (airControl ? airSpeed : speed) - (rb.velocity.x - velocity), 0, 0), ForceMode.Impulse);
+        {
+            if (dashTime <= 0)
+                rb.AddForce(new Vector3(horizontalVel * (isPushing ? pushSpeed : 1) * (airControl ? airSpeed : speed) - (rb.velocity.x - velocity), 0, 0), ForceMode.Impulse);
+        }
 
         //Make user jump
         if (Input.GetKey(JumpKey) && isGrounded)
@@ -253,18 +282,34 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Dash and small attack
-        if (Input.GetKeyDown(DashKey))
+        if (canDash && Input.GetKeyDown(DashKey))
         {
-            horizontalVel = Input.GetAxis(Horizontal);
-            float verticalVel = Input.GetAxis(Vertical);
+            Vector3 movement = NormaliseMovement(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
 
-            //if(horizontalVel ) //if horizontal and vertical vel are null, set horizontal to 0.80
+            dashTime = 8;
+            dashVelocity = new Vector3(dashSpeed * movement.x, dashSpeed * movement.y, 0);
 
-            rb.velocity = new Vector3(dashSpeed * horizontalVel, dashSpeed * verticalVel, 0);
-            velocity = dashSpeed * Input.GetAxis(Horizontal);
-            //Instantiate(smallProjectile, rb.position)
+            rb.velocity = new Vector3(dashSpeed * movement.x, dashSpeed * movement.y, 0);
+            velocity = dashSpeed * movement.x;
+            jumpDirection = movement.x;
+            canDash = false;
         }
-            
+    }
+
+    Vector3 NormaliseMovement(float x, float y)
+    {
+        Vector3 input = new Vector3(x, y, 0);
+        input.Normalize();
+
+        if (input.x == 0 && input.x == 0)
+            input.x = 1;
+
+        return input;
+    }
+
+    public void SmallProjectileHit(PlayerMovement victim)
+    {
+        canDash = true;
     }
 
     private void OnTriggerEnter(Collider other)

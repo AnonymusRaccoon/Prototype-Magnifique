@@ -129,6 +129,9 @@ MonoBehaviour:
   smallJumpPush: 5
   pushSpeed: 0.2
   dashSpeed: 15
+  smallProjectile: {fileID: 1556668439340832, guid: be1300b1777602f448d537a75a9093c3,
+    type: 2}
+  sProjSpeed: 2
   playerMask:
     serializedVersion: 2
     m_Bits: 1024
