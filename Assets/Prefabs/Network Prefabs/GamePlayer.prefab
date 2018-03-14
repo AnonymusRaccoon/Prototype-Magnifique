@@ -112,7 +112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d21adc90a3a0c5498d394337d4f81fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Horizontal: 
+  Horizontal: Horizontal
   Vertical: 
   JumpKey: 0
   HookKey: 0
@@ -127,6 +127,9 @@ MonoBehaviour:
   wallJumpPush: 10
   smallJumpPush: 5
   pushSpeed: 0.2
+  hookRange: 15
+  hookObject: {fileID: 1574484083535614, guid: 798642a34216b3c4e84e665614a0979a, type: 2}
+  playerHookSpeed: 2
   dashSpeed: 15
   smallProjectile: {fileID: 1556668439340832, guid: be1300b1777602f448d537a75a9093c3,
     type: 2}
@@ -135,6 +138,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   setuped: 0
+  velocity: 0
 --- !u!114 &114186454880906932
 MonoBehaviour:
   m_ObjectHideFlags: 1

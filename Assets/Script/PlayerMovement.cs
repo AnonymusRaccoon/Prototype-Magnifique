@@ -24,6 +24,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float pushSpeed = 0.2f;
 
     [Space]
+    [SerializeField] private float hookRange = 15;
+    [SerializeField] private GameObject hookObject;
+    [SerializeField] private float playerHookSpeed = 15;
+    private GameObject hook;
+
+    [Space]
     [SerializeField] private float dashSpeed = 15;
     [SerializeField] private GameObject smallProjectile;
     [SerializeField] private float sProjSpeed = 2;
@@ -78,8 +84,6 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsSliding()
     {
-        CapsuleCollider col = GetComponent<CapsuleCollider>();
-
         List<RaycastHit> raycastHits = Physics.BoxCastAll(rb.position - new Vector3(0, 0.6f, 0), new Vector3(0.55f, 0, 1), Vector3.up, Quaternion.identity, 1.2f).ToList();
         List<RaycastHit> walls = new List<RaycastHit>();
 
@@ -191,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
             movingPlateform = null;
 
         //Reload dash
-        if (isGrounded || isSliding || isPushing)
+        if (isGrounded || isPushing)
             canDash = true;
 
         if (-1 < velocity && velocity < 1)
@@ -215,7 +219,6 @@ public class PlayerMovement : MonoBehaviour
         if(dashTime > 0)
         {
             rb.velocity = dashVelocity;
-            //dashVelocity.x -= dashVelocity.x / 10;
             dashVelocity.y -= dashVelocity.y / 10;
             dashTime--;
 
@@ -281,6 +284,35 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(new Vector3(0, Mathf.Abs(rb.velocity.y) + gravity / 2, 0), ForceMode.Acceleration);
         }
 
+        //Hook
+        if (Input.GetKeyUp(HookKey))
+        {
+            Destroy(hook);
+        }
+        if (Input.GetKeyDown(HookKey))
+        {
+            if (hook != null)
+                Destroy(hook);
+
+            Vector3 direction = NormaliseMovement(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
+
+            RaycastHit hit;
+            if (Physics.Raycast(rb.position, direction, out hit, hookRange))
+            {
+                hook = Instantiate(hookObject, rb.position, Quaternion.identity);
+                hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
+
+                if (hit.collider.tag == "Player")
+                {
+                    hit.collider.GetComponent<PlayerMovement>().Hooked(direction, rb.position);
+                }
+            }
+            else
+            {
+                print("Mised");
+            }
+        }
+
         //Dash and small attack
         if (canDash && Input.GetKeyDown(DashKey))
         {
@@ -301,10 +333,18 @@ public class PlayerMovement : MonoBehaviour
         Vector3 input = new Vector3(x, y, 0);
         input.Normalize();
 
-        if (input.x == 0 && input.x == 0)
+        if (input.x == 0 && input.y == 0)
             input.x = 1;
 
         return input;
+    }
+
+    public void Hooked(Vector3 direction, Vector3 attackPosition)
+    {
+        float force = Vector3.Distance(rb.position, attackPosition) * -1;
+
+        rb.velocity = direction * playerHookSpeed * force;
+        velocity = direction.x * playerHookSpeed * force;
     }
 
     public void SmallProjectileHit(PlayerMovement victim)

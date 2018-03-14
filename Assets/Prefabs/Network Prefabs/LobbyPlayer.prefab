@@ -128,6 +128,9 @@ MonoBehaviour:
   wallJumpPush: 10
   smallJumpPush: 5
   pushSpeed: 0.2
+  hookRange: 15
+  hookObject: {fileID: 1574484083535614, guid: 798642a34216b3c4e84e665614a0979a, type: 2}
+  playerHookSpeed: 2
   dashSpeed: 15
   smallProjectile: {fileID: 1556668439340832, guid: be1300b1777602f448d537a75a9093c3,
     type: 2}
@@ -136,6 +139,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   setuped: 0
+  velocity: 0
 --- !u!114 &114478164937343286
 MonoBehaviour:
   m_ObjectHideFlags: 1

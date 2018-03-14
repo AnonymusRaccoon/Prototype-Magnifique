@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657803, g: 0.49641502, b: 0.5748174, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -140,7 +140,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51f13a75a864d5f458c7093ff02b89ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maps: []
+  mapContainer: {fileID: 1420418010}
+  tiles:
+  - color: {r: 0, g: 0.57254905, b: 0.27058825, a: 1}
+    leftPrefab: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
+      type: 2}
+    middlePrefab: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
+      type: 2}
+    rightPrefab: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
+      type: 2}
+    underPrefeb: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
+      type: 2}
+    leftUnder: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
+      type: 2}
+    rightUnder: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
+      type: 2}
+    bothUnder: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
+      type: 2}
+    bothTop: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8, type: 2}
+  maps:
+  - {fileID: 2800000, guid: ab48ff158f5fffb42ab4f6043d6fcce1, type: 3}
 --- !u!4 &51791410
 Transform:
   m_ObjectHideFlags: 0
@@ -212,13 +231,41 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 426396709}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0.40984458, y: -0.22113743, z: 0.10311816, w: 0.8789155}
+  m_LocalPosition: {x: 0, y: 3, z: 0.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 50.000004, y: -28.245, z: 0}
+--- !u!1 &1420418009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1420418010}
+  m_Layer: 0
+  m_Name: MapContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1420418010
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1420418009}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2054270500
 GameObject:
   m_ObjectHideFlags: 0
