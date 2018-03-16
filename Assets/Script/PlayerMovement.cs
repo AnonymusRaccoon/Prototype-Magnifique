@@ -12,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode DashKey = KeyCode.None;
     public KeyCode UltKey = KeyCode.None;
 
+    public Vector3 topLeftDeath;
+    public Vector3 bottomRightDeath;
+
     [Space]
     [SerializeField] private int speed = 10;
     [SerializeField] private int airSpeed = 7;
@@ -24,10 +27,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float pushSpeed = 0.2f;
 
     [Space]
-    [SerializeField] private float hookRange = 15;
+    [SerializeField] private float hookRange = 10;
     [SerializeField] private GameObject hookObject;
     [SerializeField] private float playerHookSpeed = 15;
+    [SerializeField] private float springForce = Mathf.Infinity;
+    [SerializeField] private float damperForce = Mathf.Infinity;
+    [SerializeField] private float ropeSwing = 1;
     private GameObject hook;
+    private bool wallHooked = false;
+    private Vector3 hookPosition;
+    private float hookLength;
 
     [Space]
     [SerializeField] private float dashSpeed = 15;
@@ -44,6 +53,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Space]
     public bool setuped = false;
+    [SerializeField] private bool gameIsRunning = false;
 
     [HideInInspector] public float velocity = 0;
 
@@ -56,7 +66,6 @@ public class PlayerMovement : MonoBehaviour
     private MovingElement movingPlateform;
 
     private Rigidbody rb;
-    
 
     private void Start()
     {
@@ -65,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
-        if (Mathf.Abs(RelativeVelocity().y) < 0.1f)
+        if (Mathf.Abs(RelativeVelocity().y) < 0.1f && !wallHooked)
         {
             if (groundedLastFrame)
             {
@@ -182,8 +191,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (JumpKey == KeyCode.None || Horizontal == null)
-            return;
+        //Check if player is outside the map bondaries
+        if (gameIsRunning && topLeftDeath.magnitude != 0 && (transform.position.x < topLeftDeath.x || transform.position.x > bottomRightDeath.x || transform.position.y > topLeftDeath.y || transform.position.y < bottomRightDeath.y))
+            Die();
 
         bool isGrounded = IsGrounded();
         bool isSliding = IsSliding();
@@ -198,6 +208,7 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded || isPushing)
             canDash = true;
 
+
         if (-1 < velocity && velocity < 1)
             velocity = 0;
 
@@ -208,6 +219,7 @@ public class PlayerMovement : MonoBehaviour
 
         float horizontalVel = Input.GetAxis(Horizontal);
 
+        //Change air velocity after wall jump
         if (wallJumped)
         {
             if (-0.3 < horizontalVel && horizontalVel < 0.3)
@@ -216,6 +228,14 @@ public class PlayerMovement : MonoBehaviour
                 horizontalVel /= 2;
         }
 
+        //Handle hook display
+        if (wallHooked)
+        {
+            if(hook != null)
+                hook.GetComponent<LineRenderer>().SetPosition(0, rb.position);
+        }
+
+        //Handle dash after user pressed the button
         if(dashTime > 0)
         {
             rb.velocity = dashVelocity;
@@ -234,10 +254,23 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        //Make player move
         if(!isSliding || (isSliding && Mathf.Sign(wallDirection) != Mathf.Sign(Input.GetAxis(Horizontal))))
         {
             if (dashTime <= 0)
-                rb.AddForce(new Vector3(horizontalVel * (isPushing ? pushSpeed : 1) * (airControl ? airSpeed : speed) - (rb.velocity.x - velocity), 0, 0), ForceMode.Impulse);
+            {
+                if (!wallHooked)
+                {
+                    //Normal movement
+                    rb.AddForce(new Vector3(horizontalVel * (isPushing ? pushSpeed : 1) * (airControl ? airSpeed : speed) - (rb.velocity.x - velocity), 0, 0), ForceMode.Impulse);
+                }
+                else
+                {
+                    //Rope swing movement
+                    if (rb.position.y < hookPosition.y - hookLength / 2)
+                        rb.AddForce(new Vector3(Input.GetAxis(Horizontal) * ropeSwing, 0, 0));
+                }
+            }
         }
 
         //Make user jump
@@ -266,7 +299,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Apply more gravity
-        if (rb.velocity.y < 1 && !isSliding)
+        if (rb.velocity.y < 1 && !isSliding && !wallHooked)
             rb.AddForce(new Vector3(0, gravity, 0), ForceMode.Acceleration);
 
         //WallSlide
@@ -285,31 +318,55 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Hook
-        if (Input.GetKeyUp(HookKey))
+        if (wallHooked)
         {
-            Destroy(hook);
-        }
-        if (Input.GetKeyDown(HookKey))
-        {
-            if (hook != null)
+            if (!Input.GetKey(HookKey))
+            {
                 Destroy(hook);
-
-            Vector3 direction = NormaliseMovement(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
-
-            RaycastHit hit;
-            if (Physics.Raycast(rb.position, direction, out hit, hookRange))
-            {
-                hook = Instantiate(hookObject, rb.position, Quaternion.identity);
-                hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
-
-                if (hit.collider.tag == "Player")
-                {
-                    hit.collider.GetComponent<PlayerMovement>().Hooked(direction, rb.position);
-                }
+                SpringJoint spring = GetComponent<SpringJoint>();
+                spring.connectedAnchor = new Vector3(0, 0, 0);
+                spring.spring = 0;
+                spring.damper = 0;
+                spring.maxDistance = 0;
+                wallHooked = false;
+                hookPosition = Vector3.zero;
+                hookLength = 0;
             }
-            else
+        }
+        else
+        {
+            if (Input.GetKeyDown(HookKey))
             {
-                print("Mised");
+                if (hook != null)
+                    Destroy(hook);
+
+                Vector3 direction = NormaliseMovement(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
+
+                RaycastHit hit;
+                if (Physics.Raycast(rb.position, direction, out hit, hookRange))
+                {
+                    wallHooked = true;
+                    SpringJoint spring = GetComponent<SpringJoint>();
+                    spring.connectedAnchor = hit.point;
+                    spring.spring = springForce;
+                    spring.damper = damperForce;
+                    spring.maxDistance = Vector3.Distance(rb.position, hit.point);
+
+                    hook = Instantiate(hookObject, rb.position, Quaternion.identity);
+                    hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
+
+                    hookPosition = hit.point;
+                    hookLength = Vector3.Distance(rb.position, hit.point);
+
+                    if (hit.collider.tag == "Player")
+                    {
+                        hit.collider.GetComponent<PlayerMovement>().Hooked(direction, rb.position);
+                    }
+                }
+                else
+                {
+                    print("Mised");
+                }
             }
         }
 
@@ -360,6 +417,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Die()
     {
+        gameIsRunning = false;
+
         if (gameObject.name == "GamePlayer (1)")
             GameObject.Find("GameManager").GetComponent<NetworkManager>().IsDead1 = true;
         if (gameObject.name == "GamePlayer (2)")

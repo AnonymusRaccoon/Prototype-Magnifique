@@ -386,7 +386,14 @@ public class NetworkManager : NetworkLobbyManager
         }
 
         pMovement.setuped = true;
-        pMovement.gameObject.transform.position = new Vector3(player * 2, 2, 0);
+        if (!gameIsRunning)
+            pMovement.transform.position = new Vector3(player * 2, 2, 0);
+        else
+        {
+            GameObject spawnPoint = GameObject.Find("SpawnPoint(Clone)");
+            pMovement.transform.position = spawnPoint.transform.position;
+            Destroy(spawnPoint);
+        }
         pMovement.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0, 5, 0);
     }
 
@@ -400,6 +407,17 @@ public class NetworkManager : NetworkLobbyManager
         lobbyPlayer.GetComponent<LobbyPlayer>().GameEntered();
 
         return base.OnLobbyServerSceneLoadedForPlayer(lobbyPlayer, gamePlayer);
+    }
+
+    public IEnumerator SetDeathZone(Vector3 topLeft, Vector3 bottomRight)
+    {
+        yield return new WaitForSeconds(0.5f);
+        foreach(GameObject foo in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            PlayerMovement player = foo.GetComponent<PlayerMovement>();
+            player.topLeftDeath = topLeft;
+            player.bottomRightDeath = bottomRight;
+        }
     }
 
     private void PlayerDied(int player)

@@ -26,6 +26,7 @@ GameObject:
   - component: {fileID: 23327928353891206}
   - component: {fileID: 54431066813788928}
   - component: {fileID: 136050800636592130}
+  - component: {fileID: 145676841850764652}
   m_Layer: 10
   m_Name: LobbyPlayer
   m_TagString: Player
@@ -119,18 +120,23 @@ MonoBehaviour:
   HookKey: 0
   DashKey: 0
   UltKey: 0
+  topLeftDeath: {x: 0, y: 0, z: 0}
+  bottomRightDeath: {x: 0, y: 0, z: 0}
   speed: 10
   airSpeed: 7
   jumpForce: 8
   smallJump: 4
   gravity: -10
-  wallJump: 4
-  wallJumpPush: 10
+  wallJump: 8
+  wallJumpPush: 12
   smallJumpPush: 5
   pushSpeed: 0.2
-  hookRange: 15
+  hookRange: 10
   hookObject: {fileID: 1574484083535614, guid: 798642a34216b3c4e84e665614a0979a, type: 2}
   playerHookSpeed: 2
+  springForce: Infinity
+  damperForce: Infinity
+  ropeSwing: 5
   dashSpeed: 15
   smallProjectile: {fileID: 1556668439340832, guid: be1300b1777602f448d537a75a9093c3,
     type: 2}
@@ -139,6 +145,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   setuped: 0
+  gameIsRunning: 0
   velocity: 0
 --- !u!114 &114478164937343286
 MonoBehaviour:
@@ -190,10 +197,32 @@ CapsuleCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1251834283741038}
-  m_Material: {fileID: 13400000, guid: 3f67cbc34e2adef4e808c3445e69a63d, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!145 &145676841850764652
+SpringJoint:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1251834283741038}
+  m_ConnectedBody: {fileID: 0}
+  m_Anchor: {x: 0, y: 0, z: 0}
+  m_AutoConfigureConnectedAnchor: 0
+  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
+  serializedVersion: 2
+  m_Spring: 0
+  m_Damper: 0
+  m_MinDistance: 0
+  m_MaxDistance: 0
+  m_Tolerance: 0.025
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 1

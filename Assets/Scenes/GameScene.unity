@@ -142,7 +142,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapContainer: {fileID: 1420418010}
   tiles:
-  - color: {r: 0, g: 0.57254905, b: 0.27058825, a: 1}
+  - name: SpawnPoint
+    color: {r: 1, g: 1, b: 1, a: 1}
+    leftPrefab: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
+      type: 2}
+    middlePrefab: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
+      type: 2}
+    rightPrefab: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
+      type: 2}
+    underPrefeb: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
+      type: 2}
+    leftUnder: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
+      type: 2}
+    rightUnder: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
+      type: 2}
+    bothUnder: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
+      type: 2}
+    bothTop: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89, type: 2}
+  - name: Grass
+    color: {r: 0, g: 0.57254905, b: 0.27058825, a: 1}
     leftPrefab: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,
       type: 2}
     middlePrefab: {fileID: 1418822140686544, guid: 995c1b88ff2258944a27e0144d0deca8,

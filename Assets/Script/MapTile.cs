@@ -3,6 +3,7 @@
 [System.Serializable]
 public class MapTile
 {
+    public string name;
     public Color color;
     public GameObject leftPrefab;
     public GameObject middlePrefab;

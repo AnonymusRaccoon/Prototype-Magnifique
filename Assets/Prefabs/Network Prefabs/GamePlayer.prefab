@@ -118,13 +118,15 @@ MonoBehaviour:
   HookKey: 0
   DashKey: 0
   UltKey: 0
+  topLeftDeath: {x: 0, y: 0, z: 0}
+  bottomRightDeath: {x: 0, y: 0, z: 0}
   speed: 10
   airSpeed: 7
   jumpForce: 8
   smallJump: 4
   gravity: -10
-  wallJump: 4
-  wallJumpPush: 10
+  wallJump: 8
+  wallJumpPush: 15
   smallJumpPush: 5
   pushSpeed: 0.2
   hookRange: 15
@@ -138,6 +140,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   setuped: 0
+  gameIsRunning: 1
   velocity: 0
 --- !u!114 &114186454880906932
 MonoBehaviour:
