@@ -158,6 +158,11 @@ MonoBehaviour:
     bothUnder: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89,
       type: 2}
     bothTop: {fileID: 1661840454744596, guid: 19551d06920c9a045b4d0ab5f1547e89, type: 2}
+    cornerLT: {fileID: 0}
+    cornerRT: {fileID: 0}
+    cornerLTR: {fileID: 0}
+    cornerRTL: {fileID: 0}
+    cornerLTRT: {fileID: 0}
   - name: Grass
     color: {r: 0, g: 0.57254905, b: 0.27058825, a: 1}
     leftPrefab: {fileID: 1037734339487326, guid: 1fb321ec5ba5d524da0ea02bf1f2504e,
@@ -175,6 +180,13 @@ MonoBehaviour:
     bothUnder: {fileID: 1710824422509366, guid: ae09be590c720b94c9bcfe9c694f0483,
       type: 2}
     bothTop: {fileID: 1724861978939794, guid: 45e587651c0c8ea469e4cdf1b1780b37, type: 2}
+    cornerLT: {fileID: 1850966508838052, guid: d4d865444db48c948a1dc42dbeb119bf, type: 2}
+    cornerRT: {fileID: 1245870273711524, guid: a3d9c21cd1a1d204c8bfe1efd32a64b9, type: 2}
+    cornerLTR: {fileID: 1306458225700728, guid: a6b4d25f488caee458b5b206219e7723,
+      type: 2}
+    cornerRTL: {fileID: 1234851170367280, guid: 38abf4387bce93c47bc5cbb0baac5a61,
+      type: 2}
+    cornerLTRT: {fileID: 0}
   maps:
   - {fileID: 2800000, guid: ab48ff158f5fffb42ab4f6043d6fcce1, type: 3}
 --- !u!4 &51791410
@@ -300,7 +312,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!81 &2054270501
 AudioListener:
   m_ObjectHideFlags: 0

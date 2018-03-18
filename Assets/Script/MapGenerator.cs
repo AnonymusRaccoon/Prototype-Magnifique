@@ -34,8 +34,8 @@ public class MapGenerator : MonoBehaviour
         Vector3 bottomRight = new Vector3(map.width, 0, 0);
         cam.transform.position = new Vector3(map.width / 2, map.height / 2, -Vector3.Distance(topLeft, bottomRight) / 2.5f);
 
-        NetworkManager netManager = GameObject.Find("GameManager").GetComponent<NetworkManager>();
-        StartCoroutine(netManager.SetDeathZone(topLeft, bottomRight));
+        //NetworkManager netManager = GameObject.Find("GameManager").GetComponent<NetworkManager>();
+        //StartCoroutine(netManager.SetDeathZone(topLeft, bottomRight));
     }
 
     private void CreateTile(int x, int y)
