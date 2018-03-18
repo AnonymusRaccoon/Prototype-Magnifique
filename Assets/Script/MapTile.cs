@@ -8,7 +8,7 @@ public class MapTile
     public GameObject leftPrefab;
     public GameObject middlePrefab;
     public GameObject rightPrefab;
-    public GameObject underPrefeb;
+    public GameObject underPrefab;
     public GameObject leftUnder;
     public GameObject rightUnder;
     public GameObject bothUnder;

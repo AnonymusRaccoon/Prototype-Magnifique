@@ -34,7 +34,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float damperForce = Mathf.Infinity;
     [SerializeField] private float ropeSwing = 1;
     private GameObject hook;
-    private bool wallHooked = false;
+    private HookType hookType = HookType.Wall;
+    private GameObject objectHooked;
     private Vector3 hookPosition;
     private float hookLength;
 
@@ -74,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
-        if (Mathf.Abs(RelativeVelocity().y) < 0.1f && !wallHooked)
+        if (Mathf.Abs(RelativeVelocity().y) < 0.1f && hookType != HookType.Wall)
         {
             if (groundedLastFrame)
             {
@@ -191,6 +192,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Horizontal == null || JumpKey == KeyCode.None)
+            return;
+
         //Check if player is outside the map bondaries
         if (gameIsRunning && topLeftDeath.magnitude != 0 && (transform.position.x < topLeftDeath.x || transform.position.x > bottomRightDeath.x || transform.position.y > topLeftDeath.y || transform.position.y < bottomRightDeath.y))
             Die();
@@ -229,11 +233,21 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Handle hook display
-        if (wallHooked)
+        if (hookType == HookType.Wall)
         {
             if(hook != null)
                 hook.GetComponent<LineRenderer>().SetPosition(0, rb.position);
         }
+        //if(hookType == HookType.SmallProjectile)
+        //{
+        //    if(objectHooked != null)
+        //    {
+        //        if (hook != null)
+        //            hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, objectHooked.transform.position });
+
+        //        objectHooked.GetComponent<SpringJoint>().connectedAnchor = rb.position;
+        //    }
+        //}
 
         //Handle dash after user pressed the button
         if(dashTime > 0)
@@ -259,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (dashTime <= 0)
             {
-                if (!wallHooked)
+                if (hookType != HookType.Wall)
                 {
                     //Normal movement
                     rb.AddForce(new Vector3(horizontalVel * (isPushing ? pushSpeed : 1) * (airControl ? airSpeed : speed) - (rb.velocity.x - velocity), 0, 0), ForceMode.Impulse);
@@ -299,7 +313,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Apply more gravity
-        if (rb.velocity.y < 1 && !isSliding && !wallHooked)
+        if (rb.velocity.y < 1 && !isSliding && hookType == HookType.None)
             rb.AddForce(new Vector3(0, gravity, 0), ForceMode.Acceleration);
 
         //WallSlide
@@ -311,16 +325,16 @@ public class PlayerMovement : MonoBehaviour
                 wallJumped = true;
                 jumpDirection = -wallDirection;
                 velocity = wallJumpPush * jumpDirection;
-                rb.AddForce(new Vector3(wallJumpPush * jumpDirection, wallJump, 0), ForceMode.Impulse);
+                rb.AddForce(new   Vector3(wallJumpPush * jumpDirection, wallJump, 0), ForceMode.Impulse);
             }
             else if(isSliding)
                 rb.AddForce(new Vector3(0, Mathf.Abs(rb.velocity.y) + gravity / 2, 0), ForceMode.Acceleration);
         }
 
         //Hook
-        if (wallHooked)
+        if (hookType != HookType.None)
         {
-            if (!Input.GetKey(HookKey))
+            if (!Input.GetKey(HookKey) || (objectHooked == null && hookType == HookType.SmallProjectile))
             {
                 Destroy(hook);
                 SpringJoint spring = GetComponent<SpringJoint>();
@@ -328,9 +342,19 @@ public class PlayerMovement : MonoBehaviour
                 spring.spring = 0;
                 spring.damper = 0;
                 spring.maxDistance = 0;
-                wallHooked = false;
+                hookType = HookType.None;
                 hookPosition = Vector3.zero;
                 hookLength = 0;
+
+                if (objectHooked != null)
+                {
+                    spring = objectHooked.GetComponent<SpringJoint>();
+                    spring.connectedBody = rb;
+                    spring.spring = 0;
+                    spring.damper = 0;
+                    spring.minDistance = 0;
+                    spring.maxDistance = 0;
+                }
             }
         }
         else
@@ -345,22 +369,39 @@ public class PlayerMovement : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(rb.position, direction, out hit, hookRange))
                 {
-                    wallHooked = true;
-                    SpringJoint spring = GetComponent<SpringJoint>();
-                    spring.connectedAnchor = hit.point;
-                    spring.spring = springForce;
-                    spring.damper = damperForce;
-                    spring.maxDistance = Vector3.Distance(rb.position, hit.point);
-
-                    hook = Instantiate(hookObject, rb.position, Quaternion.identity);
-                    hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
-
-                    hookPosition = hit.point;
-                    hookLength = Vector3.Distance(rb.position, hit.point);
-
                     if (hit.collider.tag == "Player")
                     {
                         hit.collider.GetComponent<PlayerMovement>().Hooked(direction, rb.position);
+                        hookType = HookType.Player;
+                    }
+                    else if(hit.collider.tag == "SmallProjectile")
+                    {
+                        hookType = HookType.SmallProjectile;
+                        hook = Instantiate(hookObject, rb.position, Quaternion.identity);
+                        hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
+                        objectHooked = hit.collider.gameObject;
+
+                        SpringJoint spring = GetComponent<SpringJoint>();
+                        spring.spring = springForce;
+                        spring.damper = damperForce;
+                        spring.maxDistance = Vector3.Distance(rb.position, hit.point);
+                        //spring.minDistance = Vector3.Distance(rb.position, hit.point);
+                        spring.connectedBody = hit.collider.GetComponent<Rigidbody>();
+                    }
+                    else
+                    {
+                        hookType = HookType.Wall;
+                        SpringJoint spring = GetComponent<SpringJoint>();
+                        spring.connectedAnchor = hit.point;
+                        spring.spring = springForce;
+                        spring.damper = damperForce;
+                        spring.maxDistance = Vector3.Distance(rb.position, hit.point);
+
+                        hook = Instantiate(hookObject, rb.position, Quaternion.identity);
+                        hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
+
+                        hookPosition = hit.point;
+                        hookLength = Vector3.Distance(rb.position, hit.point);
                     }
                 }
                 else

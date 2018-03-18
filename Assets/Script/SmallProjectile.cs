@@ -4,7 +4,8 @@ public class SmallProjectile : MonoBehaviour
 {
     [HideInInspector] public PlayerMovement sender;
     [SerializeField] private float pushForce = 1;
-    
+
+
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.tag == "Player")

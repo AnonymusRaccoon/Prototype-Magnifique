@@ -11,9 +11,9 @@ public class MapGenerator : MonoBehaviour
 
     private void Start()
     {
-        if (GameObject.Find("GameManager").GetComponent<NetworkManager>().selectedMap != -1)
-            map = maps[GameObject.Find("GameManager").GetComponent<NetworkManager>().selectedMap];
-        else
+        //if (GameObject.Find("GameManager").GetComponent<NetworkManager>().selectedMap != -1)
+        //    map = maps[GameObject.Find("GameManager").GetComponent<NetworkManager>().selectedMap];
+        //else
             map = maps[Random.Range(0, maps.Length)];
 
         PlaceCamera();

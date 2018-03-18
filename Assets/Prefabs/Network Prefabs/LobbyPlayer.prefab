@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 23327928353891206}
   - component: {fileID: 54431066813788928}
   - component: {fileID: 136050800636592130}
-  - component: {fileID: 145676841850764652}
+  - component: {fileID: 145343204592426130}
   m_Layer: 10
   m_Name: LobbyPlayer
   m_TagString: Player
@@ -204,7 +204,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!145 &145676841850764652
+--- !u!145 &145343204592426130
 SpringJoint:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -222,7 +222,7 @@ SpringJoint:
   m_Tolerance: 0.025
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
-  m_EnableCollision: 0
+  m_EnableCollision: 1
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 10
