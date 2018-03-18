@@ -32,8 +32,8 @@ public class MapGenerator : MonoBehaviour
         Camera cam = GameObject.Find("Main Camera").GetComponent<Camera>();
         Vector3 topLeft = new Vector3(0, map.height, 0);
         Vector3 bottomRight = new Vector3(map.width, 0, 0);
-
         cam.transform.position = new Vector3(map.width / 2, map.height / 2, -Vector3.Distance(topLeft, bottomRight) / 2.5f);
+
         NetworkManager netManager = GameObject.Find("GameManager").GetComponent<NetworkManager>();
         StartCoroutine(netManager.SetDeathZone(topLeft, bottomRight));
     }
@@ -55,9 +55,14 @@ public class MapGenerator : MonoBehaviour
             return;
 
         bool topPosition = (y + 1 < map.height) ? map.GetPixel(x, y + 1) == pixelColor : false;
-        //bool underPosition = (y - 1 > 0) ? map.GetPixel(x, y - 1) == pixelColor : false;
+        bool underPosition = (y - 1 > 0) ? map.GetPixel(x, y - 1) == pixelColor : false;
         bool leftPosition = (x - 1 > 0) ? map.GetPixel(x - 1, y) == pixelColor : false;
         bool rightPosition = (x + 1 < map.width) ? map.GetPixel(x + 1, y) == pixelColor : false;
+
+        bool topLeft = (x - 1 > 0 && y + 1 < map.height) ? map.GetPixel(x - 1, y + 1) == pixelColor : false;
+        bool topRight = (x + 1 < map.width  && y + 1 < map.height) ? map.GetPixel(x + 1, y + 1) == pixelColor : false;
+        bool bottomLeft = (x - 1 > 0 && y - 1 > 0) ? map.GetPixel(x - 1, y - 1) == pixelColor : false;
+        bool bottomRight = (x + 1 < map.width && y + 1 > 0) ? map.GetPixel(x - 1, y + 1) == pixelColor : false;
 
         GameObject prefab = null;
 
@@ -69,14 +74,29 @@ public class MapGenerator : MonoBehaviour
 
                 if (!rightPosition)
                     prefab = tile.bothUnder;
+                else if (!topRight)
+                    prefab = tile.cornerRTL;
             }
             else if (!rightPosition)
             {
                 prefab = tile.rightUnder;
+
+                if (leftPosition && !topLeft)
+                    prefab = tile.cornerLTR;
             }
             else
             {
-                prefab = tile.underPrefab;
+                if (!topLeft)
+                {
+                    if (topRight)
+                        prefab = tile.cornerLT;
+                    else
+                        prefab = tile.cornerLTRT;
+                }
+                else if (!topRight)
+                    prefab = tile.cornerRT;
+                else
+                    prefab = tile.underPrefab;
             }
         }
         else if (!leftPosition)

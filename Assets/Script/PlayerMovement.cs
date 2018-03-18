@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float playerHookSpeed = 15;
     [SerializeField] private float springForce = Mathf.Infinity;
     [SerializeField] private float damperForce = Mathf.Infinity;
+    [SerializeField] private float breakForce = 600;
     [SerializeField] private float ropeSwing = 1;
     private GameObject hook;
     private HookType hookType = HookType.Wall;
@@ -238,19 +239,17 @@ public class PlayerMovement : MonoBehaviour
             if(hook != null)
                 hook.GetComponent<LineRenderer>().SetPosition(0, rb.position);
         }
-        //if(hookType == HookType.SmallProjectile)
+        //if (hookType == HookType.SmallProjectile)
         //{
-        //    if(objectHooked != null)
+        //    if (objectHooked != null)
         //    {
         //        if (hook != null)
         //            hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, objectHooked.transform.position });
-
-        //        objectHooked.GetComponent<SpringJoint>().connectedAnchor = rb.position;
         //    }
         //}
 
         //Handle dash after user pressed the button
-        if(dashTime > 0)
+        if (dashTime > 0)
         {
             rb.velocity = dashVelocity;
             dashVelocity.y -= dashVelocity.y / 10;
@@ -338,23 +337,16 @@ public class PlayerMovement : MonoBehaviour
             {
                 Destroy(hook);
                 SpringJoint spring = GetComponent<SpringJoint>();
-                spring.connectedAnchor = new Vector3(0, 0, 0);
-                spring.spring = 0;
-                spring.damper = 0;
-                spring.maxDistance = 0;
+                if(spring != null)
+                {
+                    spring.connectedAnchor = new Vector3(0, 0, 0);
+                    spring.spring = 0;
+                    spring.damper = 0;
+                    spring.maxDistance = 0;
+                }
                 hookType = HookType.None;
                 hookPosition = Vector3.zero;
                 hookLength = 0;
-
-                if (objectHooked != null)
-                {
-                    spring = objectHooked.GetComponent<SpringJoint>();
-                    spring.connectedBody = rb;
-                    spring.spring = 0;
-                    spring.damper = 0;
-                    spring.minDistance = 0;
-                    spring.maxDistance = 0;
-                }
             }
         }
         else
@@ -376,17 +368,18 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else if(hit.collider.tag == "SmallProjectile")
                     {
-                        hookType = HookType.SmallProjectile;
-                        hook = Instantiate(hookObject, rb.position, Quaternion.identity);
-                        hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
-                        objectHooked = hit.collider.gameObject;
+                        //Cancel et boop le projectile
+                        //hookType = HookType.SmallProjectile;
+                        //hook = Instantiate(hookObject, rb.position, Quaternion.identity);
+                        //hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
+                        //objectHooked = hit.collider.gameObject;
 
-                        SpringJoint spring = GetComponent<SpringJoint>();
-                        spring.spring = springForce;
-                        spring.damper = damperForce;
-                        spring.maxDistance = Vector3.Distance(rb.position, hit.point);
-                        //spring.minDistance = Vector3.Distance(rb.position, hit.point);
-                        spring.connectedBody = hit.collider.GetComponent<Rigidbody>();
+                        //SpringJoint spring = GetComponent<SpringJoint>();
+                        //spring.spring = springForce;
+                        //spring.damper = damperForce;
+                        //spring.maxDistance = Vector3.Distance(rb.position, hit.point);
+                        //spring.breakForce = breakForce;
+                        //spring.connectedBody = hit.collider.GetComponent<Rigidbody>();
                     }
                     else
                     {
@@ -395,6 +388,7 @@ public class PlayerMovement : MonoBehaviour
                         spring.connectedAnchor = hit.point;
                         spring.spring = springForce;
                         spring.damper = damperForce;
+                        spring.breakForce = Mathf.Infinity;
                         spring.maxDistance = Vector3.Distance(rb.position, hit.point);
 
                         hook = Instantiate(hookObject, rb.position, Quaternion.identity);

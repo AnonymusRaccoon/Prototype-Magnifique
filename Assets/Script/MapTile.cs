@@ -13,4 +13,12 @@ public class MapTile
     public GameObject rightUnder;
     public GameObject bothUnder;
     public GameObject bothTop;
+
+    public GameObject cornerLT;
+    public GameObject cornerRT;
+
+    public GameObject cornerLTR;
+    public GameObject cornerRTL;
+
+    public GameObject cornerLTRT;
 }

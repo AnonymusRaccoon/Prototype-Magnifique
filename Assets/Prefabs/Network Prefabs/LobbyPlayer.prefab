@@ -136,6 +136,7 @@ MonoBehaviour:
   playerHookSpeed: 2
   springForce: Infinity
   damperForce: Infinity
+  breakForce: 600
   ropeSwing: 5
   dashSpeed: 15
   smallProjectile: {fileID: 1556668439340832, guid: be1300b1777602f448d537a75a9093c3,
@@ -224,5 +225,5 @@ SpringJoint:
   m_BreakTorque: Infinity
   m_EnableCollision: 1
   m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 10
+  m_MassScale: 0.1
+  m_ConnectedMassScale: 1
