@@ -76,7 +76,7 @@ public class MapGenerator : MonoBehaviour
             }
             else
             {
-                prefab = tile.underPrefeb;
+                prefab = tile.underPrefab;
             }
         }
         else if (!leftPosition)
