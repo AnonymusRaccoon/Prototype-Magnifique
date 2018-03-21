@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Keybinds (changed at runtime)")]
     public string Horizontal;
     public string Vertical;
     public KeyCode JumpKey = KeyCode.None;
     public KeyCode HookKey = KeyCode.None;
     public KeyCode DashKey = KeyCode.None;
     public KeyCode UltKey = KeyCode.None;
-
-    public Vector3 topLeftDeath;
-    public Vector3 bottomRightDeath;
+    public KeyCode ChannelKey = KeyCode.None;
+    public KeyCode ChannelKey2 = KeyCode.None;
 
     [Space]
+    [Space]
+    [Header("Movement settings")]
     [SerializeField] private int speed = 10;
     [SerializeField] private int airSpeed = 7;
     [SerializeField] private int jumpForce = 8;
@@ -25,22 +28,34 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private int wallJumpPush = 10;
     [SerializeField] private int smallJumpPush = 5;
     [SerializeField] private float pushSpeed = 0.2f;
+    [SerializeField] private LayerMask playerMask;
+    private bool groundedLastFrame = false;
+    private int wallDirection;
+    private int wallJumpTimer = 0;
+    private bool wallJumped;
+    private float jumpDirection;
+    private MovingElement movingPlateform;
+    [HideInInspector] public float velocity = 0;
 
     [Space]
+    [Space]
+    [Header("Hook variables")]
     [SerializeField] private float hookRange = 10;
     [SerializeField] private GameObject hookObject;
     [SerializeField] private float playerHookSpeed = 15;
     [SerializeField] private float springForce = Mathf.Infinity;
     [SerializeField] private float damperForce = Mathf.Infinity;
-    [SerializeField] private float breakForce = 600;
     [SerializeField] private float ropeSwing = 1;
     private GameObject hook;
     private HookType hookType = HookType.Wall;
     private GameObject objectHooked;
     private Vector3 hookPosition;
     private float hookLength;
+    private Rigidbody rb;
 
     [Space]
+    [Space]
+    [Header("Dash variables")]
     [SerializeField] private float dashSpeed = 15;
     [SerializeField] private GameObject smallProjectile;
     [SerializeField] private float sProjSpeed = 2;
@@ -48,26 +63,28 @@ public class PlayerMovement : MonoBehaviour
     private float dashTime = 0;
     private Vector3 dashVelocity;
 
+    [Space]
+    [Space]
+    [Header("Ult variables")]
+    [SerializeField] private float energy = 0;
+    public bool channeling = false;
+
+    [SerializeField] private GameObject largeProjectile;
+    [SerializeField] private float lProjSpeed = 4;
+
+    [SerializeField] private GameObject swapProjectile;
+    [SerializeField] private float SwapProjSpeed = 25;
+    [SerializeField] private float largeDamper = 200;
 
     [Space]
     [Space]
-    [SerializeField] private LayerMask playerMask;
-
-    [Space]
+    [Header("Game Information")]
     public bool setuped = false;
     [SerializeField] private bool gameIsRunning = false;
+    public Vector3 topLeftDeath;
+    public Vector3 bottomRightDeath;
 
-    [HideInInspector] public float velocity = 0;
 
-    private bool groundedLastFrame = false;
-    private int wallDirection;
-    private int wallJumpTimer = 0;
-    private bool wallJumped;
-    private float jumpDirection;
-
-    private MovingElement movingPlateform;
-
-    private Rigidbody rb;
 
     private void Start()
     {
@@ -76,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
-        if (Mathf.Abs(RelativeVelocity().y) < 0.1f && hookType != HookType.Wall)
+        if (Mathf.Abs(RelativeVelocity().y) < 0.1f && hookType != HookType.Wall && hookType != HookType.LargeProjectile)
         {
             if (groundedLastFrame)
             {
@@ -239,14 +256,21 @@ public class PlayerMovement : MonoBehaviour
             if(hook != null)
                 hook.GetComponent<LineRenderer>().SetPosition(0, rb.position);
         }
-        //if (hookType == HookType.SmallProjectile)
-        //{
-        //    if (objectHooked != null)
-        //    {
-        //        if (hook != null)
-        //            hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, objectHooked.transform.position });
-        //    }
-        //}
+        else if (hookType == HookType.SmallProjectile && objectHooked != null && hook != null)
+        {
+            hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, objectHooked.transform.position });
+        }
+        else if(hookType == HookType.LargeProjectile)
+        {
+            if(objectHooked != null)
+            {
+                if(hook != null)
+                    hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, objectHooked.transform.position });
+
+                hookPosition = objectHooked.transform.position;
+                GetComponent<SpringJoint>().connectedAnchor = hookPosition;
+            }
+        }
 
         //Handle dash after user pressed the button
         if (dashTime > 0)
@@ -261,7 +285,7 @@ public class PlayerMovement : MonoBehaviour
                 GameObject proj = Instantiate(smallProjectile, rb.position + new Vector3(rb.velocity.x / 10, rb.velocity.y / 5, 0), Quaternion.identity);
                 proj.name = "SmallProjectile";
                 proj.GetComponent<Rigidbody>().velocity = new Vector3(dashVelocity.x * sProjSpeed, dashVelocity.y * sProjSpeed, 0);
-                proj.GetComponent<SmallProjectile>().sender = this;
+                proj.GetComponent<Projectile>().sender = this;
 
                 dashVelocity = Vector3.zero;
             }
@@ -272,10 +296,11 @@ public class PlayerMovement : MonoBehaviour
         {
             if (dashTime <= 0)
             {
-                if (hookType != HookType.Wall)
+                if (hookType != HookType.Wall && hookType != HookType.LargeProjectile)
                 {
                     //Normal movement
-                    rb.AddForce(new Vector3(horizontalVel * (isPushing ? pushSpeed : 1) * (airControl ? airSpeed : speed) - (rb.velocity.x - velocity), 0, 0), ForceMode.Impulse);
+                    if(!channeling)
+                        rb.AddForce(new Vector3(horizontalVel * (isPushing ? pushSpeed : 1) * (airControl ? airSpeed : speed) - (rb.velocity.x - velocity), 0, 0), ForceMode.Impulse);
                 }
                 else
                 {
@@ -285,6 +310,28 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+
+        //Channel energy
+        if (channeling)
+        {
+            if (!Input.GetKey(ChannelKey) && !Input.GetKey(ChannelKey2))
+            {
+                StartCoroutine(CancelChanneling());
+            }
+            else
+            {
+                energy += Time.deltaTime;
+                energy = Mathf.Clamp(energy, 0, 3);
+            }
+        }
+        else if (Input.GetKey(ChannelKey) || Input.GetKey(ChannelKey2))
+        {
+            channeling = true;
+        }
+
+        //Cancel player movement and abilities if he is channeling
+        if (channeling)
+            return;
 
         //Make user jump
         if (Input.GetKey(JumpKey) && isGrounded)
@@ -302,7 +349,6 @@ public class PlayerMovement : MonoBehaviour
             }
             else
                 rb.velocity = new Vector3(rb.velocity.x, smallJump, rb.velocity.z);
-
         }
 
         //Move with the plateform
@@ -340,6 +386,7 @@ public class PlayerMovement : MonoBehaviour
                 if(spring != null)
                 {
                     spring.connectedAnchor = new Vector3(0, 0, 0);
+                    spring.connectedBody = null;
                     spring.spring = 0;
                     spring.damper = 0;
                     spring.maxDistance = 0;
@@ -368,18 +415,33 @@ public class PlayerMovement : MonoBehaviour
                     }
                     else if(hit.collider.tag == "SmallProjectile")
                     {
-                        //Cancel et boop le projectile
-                        //hookType = HookType.SmallProjectile;
-                        //hook = Instantiate(hookObject, rb.position, Quaternion.identity);
-                        //hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
-                        //objectHooked = hit.collider.gameObject;
+                        hookType = HookType.SmallProjectile;
+                        hook = Instantiate(hookObject, rb.position, Quaternion.identity);
+                        hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
+                        objectHooked = hit.collider.gameObject;
 
-                        //SpringJoint spring = GetComponent<SpringJoint>();
-                        //spring.spring = springForce;
-                        //spring.damper = damperForce;
-                        //spring.maxDistance = Vector3.Distance(rb.position, hit.point);
-                        //spring.breakForce = breakForce;
-                        //spring.connectedBody = hit.collider.GetComponent<Rigidbody>();
+                        SpringJoint spring = GetComponent<SpringJoint>();
+                        spring.spring = springForce;
+                        spring.damper = damperForce;
+                        spring.maxDistance = Vector3.Distance(rb.position, hit.point);
+                        spring.connectedBody = hit.collider.GetComponent<Rigidbody>();
+                        StartCoroutine(CancelHook());
+                    }
+                    else if (hit.collider.tag == "LargeProjectile")
+                    {
+                        hookType = HookType.LargeProjectile;
+                        hook = Instantiate(hookObject, rb.position, Quaternion.identity);
+                        hook.GetComponent<LineRenderer>().SetPositions(new Vector3[] { rb.position, hit.point });
+                        objectHooked = hit.collider.gameObject;
+
+                        SpringJoint spring = GetComponent<SpringJoint>();
+                        spring.connectedAnchor = hit.point;
+                        spring.spring = springForce;
+                        spring.damper = largeDamper;
+                        spring.maxDistance = Vector3.Distance(rb.position, hit.point);
+
+                        hookPosition = hit.point;
+                        hookLength = Vector3.Distance(rb.position, hit.point);
                     }
                     else
                     {
@@ -418,6 +480,62 @@ public class PlayerMovement : MonoBehaviour
             jumpDirection = movement.x;
             canDash = false;
         }
+
+        //Ult
+        if (Input.GetKeyDown(UltKey))
+        {
+            Vector3 direction = NormaliseMovement(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
+
+            if (energy < 1)
+            {
+                //Boop
+            }
+            else if(energy < 3)
+            {
+                //Large projectile
+                energy -= 1;
+
+                GameObject proj = Instantiate(largeProjectile, rb.position + direction * 4, Quaternion.identity);
+                proj.name = "LargeProjectile";
+                proj.GetComponent<Rigidbody>().velocity = new Vector3(direction.x * lProjSpeed, direction.y * lProjSpeed, 0);
+                proj.GetComponent<Projectile>().sender = this;
+            }
+            else if(energy == 3)
+            {
+                //Swap projectile
+                energy -= 3;
+                GameObject proj = Instantiate(swapProjectile, rb.position + direction, Quaternion.identity);
+                proj.name = "SwapProjectile";
+                proj.GetComponent<Rigidbody>().velocity = new Vector3(direction.x * SwapProjSpeed, direction.y * SwapProjSpeed, 0);
+                proj.GetComponent<Projectile>().sender = this;
+            }
+        }
+    }
+
+    //Cancel hook on small projectile, if not, the rigidbody crash
+    private IEnumerator CancelHook()
+    {
+        yield return new WaitForSeconds(0.7f);
+        Destroy(hook);
+        SpringJoint spring = GetComponent<SpringJoint>();
+        if (spring != null)
+        {
+            spring.connectedAnchor = new Vector3(0, 0, 0);
+            spring.connectedBody = null;
+            spring.spring = 0;
+            spring.damper = 0;
+            spring.maxDistance = 0;
+        }
+        hookType = HookType.None;
+        hookPosition = Vector3.zero;
+        hookLength = 0;
+    }
+
+    //Cancel channeling after 0.5 seconds
+    private IEnumerator CancelChanneling()
+    {
+        yield return new WaitForSeconds(0.5f);
+        channeling = false;
     }
 
     Vector3 NormaliseMovement(float x, float y)
@@ -433,13 +551,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void Hooked(Vector3 direction, Vector3 attackPosition)
     {
-        float force = Vector3.Distance(rb.position, attackPosition) * -1;
-
-        rb.velocity = direction * playerHookSpeed * force;
-        velocity = direction.x * playerHookSpeed * force;
+        rb.velocity = direction * playerHookSpeed;
+        velocity = direction.x * playerHookSpeed;
     }
 
-    public void SmallProjectileHit(PlayerMovement victim)
+    public void ProjectileHit(PlayerMovement victim)
     {
         canDash = true;
     }

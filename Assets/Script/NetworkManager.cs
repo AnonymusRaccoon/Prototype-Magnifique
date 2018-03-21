@@ -298,6 +298,7 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = KeyCode.LeftShift;
                 pMovement.DashKey = KeyCode.LeftControl;
                 pMovement.UltKey = KeyCode.F;
+                pMovement.ChannelKey = KeyCode.A;
             }
             else
             {
@@ -307,6 +308,8 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP1 + "Button2");
                 pMovement.DashKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP1 + "Button3");
                 pMovement.UltKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP1 + "Button1");
+                pMovement.ChannelKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP1 + "Button4");
+                pMovement.ChannelKey2 = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP1 + "Button5");
             }
         }
         else if (player == 2)
@@ -322,6 +325,7 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = KeyCode.LeftShift;
                 pMovement.DashKey = KeyCode.LeftControl;
                 pMovement.UltKey = KeyCode.F;
+                pMovement.ChannelKey = KeyCode.A;
             }
             else
             {
@@ -332,6 +336,8 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP2 + "Button2");
                 pMovement.DashKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP2 + "Button3");
                 pMovement.UltKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP2 + "Button1");
+                pMovement.ChannelKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP2 + "Button4");
+                pMovement.ChannelKey2 = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP2 + "Button5");
             }
         }
         else if (player == 3)
@@ -347,6 +353,7 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = KeyCode.LeftShift;
                 pMovement.DashKey = KeyCode.LeftControl;
                 pMovement.UltKey = KeyCode.F;
+                pMovement.ChannelKey = KeyCode.A;
             }
             else
             {
@@ -357,6 +364,8 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP3 + "Button2");
                 pMovement.DashKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP3 + "Button3");
                 pMovement.UltKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP3 + "Button1");
+                pMovement.ChannelKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP3 + "Button4");
+                pMovement.ChannelKey2 = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP3 + "Button5");
             }
         }
         else if (player == 4)
@@ -372,6 +381,7 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = KeyCode.LeftShift;
                 pMovement.DashKey = KeyCode.LeftControl;
                 pMovement.UltKey = KeyCode.F;
+                pMovement.ChannelKey = KeyCode.A;
             }
             else
             {
@@ -382,6 +392,8 @@ public class NetworkManager : NetworkLobbyManager
                 pMovement.HookKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP4 + "Button2");
                 pMovement.DashKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP4 + "Button3");
                 pMovement.UltKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP4 + "Button1");
+                pMovement.ChannelKey = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP4 + "Button4");
+                pMovement.ChannelKey2 = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + ControllerP4 + "Button5");
             }
         }
 

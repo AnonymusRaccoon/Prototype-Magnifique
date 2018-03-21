@@ -120,8 +120,8 @@ MonoBehaviour:
   HookKey: 0
   DashKey: 0
   UltKey: 0
-  topLeftDeath: {x: 0, y: 0, z: 0}
-  bottomRightDeath: {x: 0, y: 0, z: 0}
+  ChannelKey: 0
+  ChannelKey2: 0
   speed: 10
   airSpeed: 7
   jumpForce: 8
@@ -131,23 +131,32 @@ MonoBehaviour:
   wallJumpPush: 12
   smallJumpPush: 5
   pushSpeed: 0.2
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  velocity: 0
   hookRange: 10
   hookObject: {fileID: 1574484083535614, guid: 798642a34216b3c4e84e665614a0979a, type: 2}
-  playerHookSpeed: 2
+  playerHookSpeed: 10
   springForce: Infinity
   damperForce: Infinity
-  breakForce: 500
   ropeSwing: 5
   dashSpeed: 15
   smallProjectile: {fileID: 1556668439340832, guid: be1300b1777602f448d537a75a9093c3,
     type: 2}
   sProjSpeed: 2
-  playerMask:
-    serializedVersion: 2
-    m_Bits: 1024
+  energy: 0
+  channeling: 0
+  largeProjectile: {fileID: 1725627401684318, guid: 3bdc9aa7fe5b6c44dbb49a2ea88300f9,
+    type: 2}
+  lProjSpeed: 8
+  swapProjectile: {fileID: 1815375947999032, guid: 7bf1981eaa398fe4cb42878b4cd942cc,
+    type: 2}
+  SwapProjSpeed: 25
   setuped: 0
   gameIsRunning: 0
-  velocity: 0
+  topLeftDeath: {x: 0, y: 0, z: 0}
+  bottomRightDeath: {x: 0, y: 0, z: 0}
 --- !u!114 &114478164937343286
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -220,10 +229,10 @@ SpringJoint:
   m_Damper: 0
   m_MinDistance: 0
   m_MaxDistance: 0
-  m_Tolerance: 0.025
+  m_Tolerance: 1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
-  m_EnableCollision: 1
-  m_EnablePreprocessing: 1
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 0
   m_MassScale: 0.1
   m_ConnectedMassScale: 1

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DeathZone
   - SmallProjectile
+  - LargeProjectile
   layers:
   - Default
   - TransparentFX
