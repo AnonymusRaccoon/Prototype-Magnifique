@@ -379,7 +379,7 @@ public class PlayerMovement : MonoBehaviour
         //Hook
         if (hookType != HookType.None)
         {
-            if (!Input.GetKey(HookKey) || (objectHooked == null && hookType == HookType.SmallProjectile))
+            if (!Input.GetKey(HookKey) || (objectHooked == null && (hookType == HookType.SmallProjectile || hookType == HookType.LargeProjectile)))
             {
                 Destroy(hook);
                 SpringJoint spring = GetComponent<SpringJoint>();

@@ -149,10 +149,11 @@ MonoBehaviour:
   channeling: 0
   largeProjectile: {fileID: 1725627401684318, guid: 3bdc9aa7fe5b6c44dbb49a2ea88300f9,
     type: 2}
-  lProjSpeed: 8
+  lProjSpeed: 4
   swapProjectile: {fileID: 1815375947999032, guid: 7bf1981eaa398fe4cb42878b4cd942cc,
     type: 2}
   SwapProjSpeed: 25
+  largeDamper: 200
   setuped: 0
   gameIsRunning: 0
   topLeftDeath: {x: 0, y: 0, z: 0}
